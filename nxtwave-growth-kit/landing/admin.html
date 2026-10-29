@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Campaign Control Room</title>
+<style>
+:root{--bg:#0b1020;--card:#131a33;--ink:#eef1ff;--mute:#9aa4d1;--accent:#b6ff3c;--accent2:#ffb62e;--line:#26305e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;padding:20px;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto}
+h1{font-size:28px;letter-spacing:-.5px}
+h1 span{color:var(--accent)}
+.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.btn{background:var(--accent);color:#0b1020;font-weight:700;border:0;border-radius:10px;padding:9px 14px;cursor:pointer;font-size:14px}
+.btn.g{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.k b{display:block;font-size:30px;font-variant-numeric:tabular-nums}
+.k small{color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:1px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:800px){.row{grid-template-columns:1fr}}
+h3{font-size:15px;margin-bottom:10px;color:var(--mute);text-transform:uppercase;letter-spacing:1px}
+.bar{height:10px;background:#0e1430;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.line{display:flex;justify-content:space-between;font-size:14px;margin:10px 0 4px}
+.days{display:flex;align-items:flex-end;gap:8px;height:150px}
+.days div{flex:1;background:linear-gradient(180deg,var(--accent),#6fa51c);border-radius:6px 6px 0 0;position:relative;min-height:3px}
+.days span{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:12px}
+.days em{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:11px;color:var(--mute);font-style:normal}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--mute);font-size:11px;text-transform:uppercase;letter-spacing:1px}
+.note{color:var(--mute);font-size:13px;margin-top:14px}
+.good{color:var(--accent)}.warn{color:var(--accent2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>Campaign <span>Control Room</span></h1>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="demo">Load demo data</button>
+      <button class="btn g" id="csv">Export CSV</button>
+      <button class="btn g" id="clear">Clear</button>
+      <a class="btn g" href="index.html" style="text-decoration:none">← Landing page</a>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="card k"><small>Registrations</small><b id="kTotal">0</b></div>
+    <div class="card k"><small>Goal progress</small><b id="kPct">0%</b></div>
+    <div class="card k"><small>Referral share</small><b id="kRef">0%</b></div>
+    <div class="card k"><small>Avg / day</small><b id="kAvg">0</b></div>
+    <div class="card k"><small>Projected by day 7</small><b id="kProj">0</b></div>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div class="line"><span>Goal: 500 registrations</span><span id="goalTxt"></span></div>
+    <div class="bar"><i id="goalBar" style="width:0"></i></div>
+    <p class="note" id="verdict"></p>
+  </div>
+
+  <div class="row">
+    <div class="card"><h3>Registrations per day</h3><div class="days" id="days"></div><div style="height:22px"></div></div>
+    <div class="card"><h3>Where they came from</h3><div id="channels"></div></div>
+  </div>
+  <div class="row">
+    <div class="card"><h3>Top colleges</h3><table id="colleges"></table></div>
+    <div class="card"><h3>Top referrers</h3><table id="refs"></table></div>
+  </div>
+  <p class="note">Data reads from this browser's storage (same origin as index.html). For real use, point CONFIG.WEBHOOK_URL in index.html at the Google Sheet script in the README and use the Sheet as the source of truth.</p>
+</div>
+
+<script>
+const KEY = "nw_regs_v1", GOAL = 500, DAYS = 7;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { return []; } };
+const save = a => localStorage.setItem(KEY, JSON.stringify(a));
+
+function render() {
+  const r = load(), n = r.length;
+  $("kTotal").textContent = n;
+  $("kPct").textContent = Math.round(n / GOAL * 100) + "%";
+  const refN = r.filter(x => x.ref).length;
+  $("kRef").textContent = n ? Math.round(refN / n * 100) + "%" : "0%";
+
+  const byDay = {};
+  r.forEach(x => { const d = x.ts.slice(0, 10); byDay[d] = (byDay[d] || 0) + 1; });
+  const dkeys = Object.keys(byDay).sort();
+  const active = Math.max(1, dkeys.length);
+  const avg = n / active;
+  $("kAvg").textContent = avg.toFixed(0);
+  const proj = Math.round(avg * DAYS);
+  $("kProj").textContent = proj;
+  $("goalTxt").textContent = n + " / " + GOAL;
+  $("goalBar").style.width = Math.min(100, n / GOAL * 100) + "%";
+  $("verdict").innerHTML = n === 0 ? "No data yet. Click <b>Load demo data</b> to preview the dashboard."
+    : proj >= GOAL ? `<span class="good">On track.</span> At the current pace you reach about ${proj} by day ${DAYS}.`
+    : `<span class="warn">Behind pace.</span> Projected ${proj}. Double down on the best channel below and trigger the referral push.`;
+
+  const max = Math.max(1, ...dkeys.map(k => byDay[k]));
+  $("days").innerHTML = dkeys.slice(-7).map(k => `<div style="height:${byDay[k] / max * 100}%"><span>${byDay[k]}</span><em>${k.slice(5)}</em></div>`).join("") || "<p class='note'>No data</p>";
+
+  const ch = {}; r.forEach(x => ch[x.source] = (ch[x.source] || 0) + 1);
+  $("channels").innerHTML = Object.entries(ch).sort((a, b) => b[1] - a[1]).map(([k, v]) =>
+    `<div class="line"><span>${esc(k)}</span><span>${v} (${Math.round(v / n * 100)}%)</span></div><div class="bar"><i style="width:${v / n * 100}%"></i></div>`).join("") || "<p class='note'>No data</p>";
+
+  const col = {}; r.forEach(x => col[x.college] = (col[x.college] || 0) + 1);
+  $("colleges").innerHTML = "<tr><th>College</th><th>Regs</th></tr>" + Object.entries(col).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, v]) => `<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join("");
+
+  const rc = {}; r.forEach(x => { if (x.ref) rc[x.ref] = (rc[x.ref] || 0) + 1; });
+  const nameOf = c => { const x = r.find(y => y.code === c); return x ? (x.codename || x.name) : c; };
+  $("refs").innerHTML = "<tr><th>Referrer</th><th>Friends</th></tr>" + Object.entries(rc).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, v]) => `<tr><td>${esc(nameOf(k))}</td><td>${v}</td></tr>`).join("");
+}
+
+function demo() {
+  const first = ["Aarav", "Diya", "Rohan", "Sneha", "Karthik", "Meera", "Arjun", "Priya", "Vikram", "Anjali", "Rahul", "Divya", "Siddharth", "Lakshmi", "Harsha", "Pooja"];
+  const last = ["Reddy", "Sharma", "Naidu", "Rao", "Shetty", "Kumar", "Patel", "Iyer", "Nair", "Gowda"];
+  const colleges = ["Sahyadri College of Engineering", "VIT Vellore", "JNTU Kakinada", "RV College of Engineering", "SRM Chennai", "PES University", "NIT Warangal", "Andhra University College of Engg", "BMS College of Engineering", "KL University", "Manipal Institute of Technology", "VR Siddhartha Engineering College"];
+  const sources = [["whatsapp", .38], ["email", .22], ["referral", .24], ["instagram", .09], ["linkedin", .07]];
+  const pick = () => { let r = Math.random(), a = 0; for (const [s, p] of sources) { a += p; if (r < a) return s; } return "direct"; };
+  const perDay = [26, 41, 58, 74, 79, 62]; // ramp, then WhatsApp push
+  const out = [], codes = [];
+  let id = 0;
+  perDay.forEach((cnt, di) => {
+    for (let i = 0; i < cnt; i++) {
+      const name = first[Math.floor(Math.random() * first.length)] + " " + last[Math.floor(Math.random() * last.length)];
+      const code = name.replace(/[^a-z]/gi, "").slice(0, 3).toUpperCase() + String(1000 + id++);
+      const src = (di === 0 && !codes.length) ? "whatsapp" : pick();
+      const d = new Date(); d.setDate(d.getDate() - (5 - di)); d.setHours(8 + Math.floor(Math.random() * 14), Math.floor(Math.random() * 60));
+      let ref = "";
+      if (src === "referral" && codes.length) { const c = codes[Math.min(codes.length - 1, Math.floor(Math.pow(Math.random(), 2) * codes.length))]; ref = c; }
+      out.push({ name, phone: "9" + String(100000000 + id), email: "s" + id + "@demo.in", college: colleges[Math.floor(Math.random() * colleges.length)], branch: "CSE / IT", year: "Final year (4th)", code, ref, source: src, ts: d.toISOString() });
+      codes.push(code);
+    }
+  });
+  save(out); render();
+}
+
+function csv() {
+  const r = load(); if (!r.length) return alert("No data to export");
+  const cols = ["name", "phone", "email", "college", "branch", "year", "code", "ref", "source", "ts"];
+  const q = v => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+  const s = [cols.join(",")].concat(r.map(x => cols.map(c => q(x[c])).join(","))).join("\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([s], { type: "text/csv" })); a.download = "registrations.csv"; a.click();
+}
+$("demo").onclick = demo; $("csv").onclick = csv;
+$("clear").onclick = () => { if (confirm("Delete all stored registrations in this browser?")) { localStorage.removeItem(KEY); render(); } };
+render(); setInterval(render, 5000);
+</script>
+</body>
+</html>

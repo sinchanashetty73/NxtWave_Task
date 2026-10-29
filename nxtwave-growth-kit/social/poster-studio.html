@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Poster &amp; Caption Studio</title>
+<style>
+:root{--bg:#0b1020;--card:#131a33;--ink:#eef1ff;--mute:#9aa4d1;--accent:#b6ff3c;--line:#26305e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;padding:18px;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto}
+h1{font-size:26px;margin-bottom:4px}h1 span{color:var(--accent)}
+p.s{color:var(--mute);margin-bottom:16px}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:16px}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+label{display:block;font-size:12px;color:var(--mute);margin:12px 0 5px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+select,input,textarea{width:100%;background:#0e1430;border:1px solid var(--line);color:var(--ink);padding:10px;border-radius:9px;font-size:15px;font-family:inherit}
+textarea{min-height:120px;resize:vertical}
+.btn{background:var(--accent);color:#0b1020;font-weight:800;border:0;border-radius:10px;padding:11px 16px;cursor:pointer;font-size:14px;margin-top:12px}
+.btn.g{background:transparent;color:var(--ink);border:1px solid var(--line);margin-left:6px}
+.stage{display:flex;justify-content:center;background:#070b18;border-radius:12px;padding:14px;overflow:auto}
+canvas{max-width:100%;max-height:640px;width:auto;height:auto;border-radius:8px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chk{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px}
+.chk input{width:auto}
+.toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:var(--accent);color:#0b1020;font-weight:700;padding:8px 16px;border-radius:99px;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="wrap">
+  <h1>Poster &amp; Caption <span>Studio</span></h1>
+  <p class="s">Make a scroll-stopping poster for Instagram, WhatsApp Status or LinkedIn, plus a matching caption with a tracked link. Ambassadors can add their own referral code.</p>
+  <div class="grid">
+    <div class="card">
+      <label for="fmt">Format</label>
+      <select id="fmt">
+        <option value="sq">Instagram post / WhatsApp (1080×1080)</option>
+        <option value="st">Story / Status / Reel cover (1080×1920)</option>
+        <option value="li">LinkedIn banner (1200×627)</option>
+      </select>
+      <label for="hook">Headline hook</label>
+      <select id="hook">
+        <option>Placements in 3 months. Zero AI projects?</option>
+        <option>Build a working AI project in 60 minutes. Free.</option>
+        <option>"What have you built?" Be ready for it.</option>
+        <option>Your first AI project starts here.</option>
+        <option value="__c">Custom…</option>
+      </select>
+      <input id="custom" placeholder="Type your own headline" style="display:none;margin-top:8px">
+      <label for="theme">Colour theme</label>
+      <select id="theme"><option value="neon">Neon night</option><option value="sun">Sunset</option><option value="ice">Ice blue</option><option value="lime">Lime pop</option></select>
+      <label for="code">Referral code (optional)</label>
+      <input id="code" placeholder="e.g. PRI4K9">
+      <label for="base">Your page URL</label>
+      <input id="base" value="https://YOUR-SITE/index.html">
+      <div class="chk"><input type="checkbox" id="rew" checked><label for="rew" style="margin:0;text-transform:none;font-size:14px;color:var(--ink)">Show rewards strip</label></div>
+      <button class="btn" id="dl">⬇ Download poster (PNG)</button>
+      <label for="plat" style="margin-top:20px">Caption for</label>
+      <select id="plat"><option value="instagram">Instagram</option><option value="youtube">YouTube Shorts</option><option value="linkedin">LinkedIn</option><option value="whatsapp">WhatsApp Status</option><option value="telegram">Telegram</option></select>
+    </div>
+    <div>
+      <div class="stage"><canvas id="c"></canvas></div>
+      <div class="card" style="margin-top:14px">
+        <label style="margin-top:0">Caption (editable)</label>
+        <textarea id="cap"></textarea>
+        <div class="row"><button class="btn" id="cp">Copy caption</button><button class="btn g" id="cpl">Copy tracked link</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const FORMATS = { sq: { w: 1080, h: 1080 }, st: { w: 1080, h: 1920 }, li: { w: 1200, h: 627 } };
+const THEMES = {
+  neon: { a: "#0b1020", b: "#1b2a6b", hi: "#b6ff3c", hi2: "#ffb62e", ink: "#ffffff", dark: "#0b1020" },
+  sun:  { a: "#2a0a3b", b: "#ff5d3b", hi: "#ffe14a", hi2: "#ffffff", ink: "#ffffff", dark: "#2a0a3b" },
+  ice:  { a: "#04162e", b: "#0b6fd6", hi: "#7df9ff", hi2: "#ffffff", ink: "#ffffff", dark: "#04162e" },
+  lime: { a: "#101b0a", b: "#3a7d0a", hi: "#d8ff3d", hi2: "#ffffff", ink: "#ffffff", dark: "#101b0a" }
+};
+const c = $("c"), x = c.getContext("2d");
+
+function toast(t) { const e = $("toast"); e.textContent = t; e.classList.add("show"); setTimeout(() => e.classList.remove("show"), 1800); }
+function headline() { return $("hook").value === "__c" ? ($("custom").value.trim() || "Your headline here") : $("hook").value; }
+function wrap(text, maxW, font) {
+  x.font = font; const words = text.split(" "), lines = []; let cur = "";
+  for (const w of words) { const t = cur ? cur + " " + w : w; if (x.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t; }
+  if (cur) lines.push(cur); return lines;
+}
+function rr(px, py, w, h, r) { x.beginPath(); x.moveTo(px + r, py); x.arcTo(px + w, py, px + w, py + h, r); x.arcTo(px + w, py + h, px, py + h, r); x.arcTo(px, py + h, px, py, r); x.arcTo(px, py, px + w, py, r); x.closePath(); }
+
+function draw() {
+  const f = FORMATS[$("fmt").value], T = THEMES[$("theme").value];
+  c.width = f.w; c.height = f.h; const W = f.w, H = f.h, wide = W > H, tall = H > W * 1.5;
+  const S = wide ? H / 1080 * 1.55 : 1; // scale up type in wide format
+  const m = wide ? 50 : W * 0.07, inner = W - m * 2;
+  const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, T.a); g.addColorStop(1, T.b); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  // decorative glows + grid dots
+  x.globalAlpha = .14; x.fillStyle = T.hi; x.beginPath(); x.arc(W * .92, H * .1, Math.min(W, H) * .3, 0, 7); x.fill();
+  x.fillStyle = T.hi2; x.beginPath(); x.arc(W * .05, H * .95, Math.min(W, H) * .34, 0, 7); x.fill(); x.globalAlpha = .08; x.fillStyle = "#fff";
+  for (let i = 0; i < W; i += 54) for (let j = 0; j < H; j += 54) x.fillRect(i, j, 3, 3);
+  x.globalAlpha = 1;
+
+  let y = tall ? H * .1 : m;
+  // pill
+  const pill = "FREE LIVE WORKSHOP  ·  FINAL-YEAR ENGINEERS"; x.font = `700 ${Math.round(26 * S)}px system-ui,sans-serif`;
+  const pw = Math.min(inner, x.measureText(pill).width + 44 * S), ph = 54 * S;
+  x.fillStyle = "rgba(255,255,255,.1)"; rr(m, y, pw, ph, ph / 2); x.fill(); x.strokeStyle = T.hi; x.lineWidth = 2; x.stroke();
+  x.fillStyle = T.hi; x.textBaseline = "middle"; x.fillText(pill, m + 22 * S, y + ph / 2 + 2); x.textBaseline = "alphabetic";
+  y += ph + (tall ? 70 : 38 * S);
+
+  // headline
+  const hs = tall ? 128 : wide ? 58 : 96, hf = `800 ${hs}px system-ui,sans-serif`;
+  let lines = wrap(headline(), inner * (wide ? .8 : 1), hf), size = hs;
+  while (lines.length > (tall ? 6 : 4) && size > 44) { size -= 6; lines = wrap(headline(), inner * (wide ? .8 : 1), `800 ${size}px system-ui,sans-serif`); }
+  x.font = `800 ${size}px system-ui,sans-serif`; x.fillStyle = T.ink;
+  lines.forEach((l, i) => { if (i === lines.length - 1) x.fillStyle = T.hi; x.fillText(l, m, y + size * (i + 1) * 1.05); });
+  y += size * lines.length * 1.05 + (tall ? 50 : 26 * S);
+
+  // sub
+  const sub = "Build your first AI project in 60 minutes. No experience needed."; const sf = `500 ${Math.round((tall ? 44 : wide ? 24 : 38))}px system-ui,sans-serif`;
+  x.fillStyle = "rgba(255,255,255,.82)"; wrap(sub, inner * (wide ? .75 : 1), sf).forEach((l, i) => { x.font = sf; x.fillText(l, m, y + (i + 1) * (tall ? 56 : wide ? 32 : 48)); });
+  y += wrap(sub, inner * (wide ? .75 : 1), sf).length * (tall ? 56 : wide ? 32 : 48) + (tall ? 40 : 24 * S);
+
+  // chips
+  const chips = ["60 MIN", "NO EXPERIENCE", "GITHUB LINK"], cs = tall ? 30 : wide ? 18 : 26; x.font = `800 ${cs}px system-ui,sans-serif`;
+  let cx = m; const ch = cs * 2.1;
+  chips.forEach(t => { const w = x.measureText(t).width + cs * 1.6; x.fillStyle = T.hi; rr(cx, y, w, ch, ch / 2); x.fill(); x.fillStyle = T.dark; x.fillText(t, cx + cs * .8, y + ch * .65); cx += w + 12; });
+  y += ch + (tall ? 50 : 30 * S);
+
+  // bottom block anchored to the bottom
+  const ctaH = tall ? 130 : wide ? 74 : 112, rewH = $("rew").checked ? (tall ? 320 : wide ? 56 : 130) : 0, gap = 18;
+  let by = H - m * (tall ? 1.6 : 1) - ctaH;
+  if ($("rew").checked) {
+    const ry = by - gap - rewH; x.fillStyle = "rgba(255,255,255,.1)"; rr(m, ry, inner, rewH, 20); x.fill(); x.strokeStyle = T.hi2; x.lineWidth = 2; x.setLineDash([10, 8]); x.stroke(); x.setLineDash([]);
+    const rs = tall ? 36 : wide ? 18 : 28;
+    const items = ["Workshop recording", "Invite 1: Starter Kit", "Invite 3: Interview Cheat-Sheet", "Invite 5: Priority Q&A"];
+    if (wide) {
+      x.font = `800 ${rs}px system-ui,sans-serif`; x.fillStyle = T.hi2; const lead = "★ REWARDS: "; x.fillText(lead, m + 22, ry + rewH / 2 + rs * .35);
+      const lw = x.measureText(lead).width; x.font = `600 ${rs - 1}px system-ui,sans-serif`; x.fillStyle = "#fff";
+      x.fillText("Recording  ·  Invite 1: Starter Kit  ·  3: Interview Cheat-Sheet  ·  5: Priority Q&A", m + 22 + lw, ry + rewH / 2 + rs * .35);
+    } else {
+    x.font = `800 ${rs}px system-ui,sans-serif`; x.fillStyle = T.hi2; x.fillText("★ REWARDS WHEN YOU REGISTER", m + 26, ry + rs * 1.6);
+    x.font = `500 ${rs - 3}px system-ui,sans-serif`; x.fillStyle = "#fff";
+    if (tall) { items.forEach((t, i) => x.fillText("•  " + t, m + 26, ry + rs * 3.1 + i * (rs + 16))); }
+    else { const half = Math.ceil(items.length / 2); items.forEach((t, i) => x.fillText("•  " + t, m + 26 + (i % 2) * (inner / 2), ry + rs * 2.6 + Math.floor(i / 2) * (rs + 8))); }
+    }
+  }
+  x.fillStyle = T.hi; rr(m, by, inner, ctaH, 22); x.fill(); x.fillStyle = T.dark;
+  const code = $("code").value.trim().toUpperCase(), cts = tall ? 44 : wide ? 28 : 40;
+  x.font = `800 ${cts}px system-ui,sans-serif`; x.fillText(code ? "Register free · use code " + code : "Register free · link in bio", m + 30, by + ctaH / 2 + cts * .35);
+}
+
+function link(plat) { const base = $("base").value.trim() || "https://YOUR-SITE/index.html", code = $("code").value.trim().toUpperCase(); return base + "?utm_source=" + plat + (code ? "&ref=" + code : ""); }
+const CAPS = {
+  instagram: l => `Final-year? Don't walk into placements without a project. 🚀\nBuild your first AI project in 60 minutes: FREE live workshop.\n✅ No AI experience needed\n✅ Working project + GitHub link\n✅ Recording for everyone who registers\nInvite friends and unlock rewards (Starter Kit, Interview Cheat-Sheet, priority Q&A).\n👉 Register: ${l}\n#FinalYear #EngineeringStudents #AIProjects #Placements #LearnAI #CampusPlacements`,
+  youtube: l => `Build Your First AI Project in 60 Minutes | Free Workshop for Final-Year Engineers\nRegister free: ${l}\nNo experience needed. Leave with a working project + GitHub link.\n#Shorts #AIProjects #FinalYear #Placements`,
+  linkedin: l => `The most common interview question for freshers: "What have you built?"\n\nWe're running a free, live 60-minute workshop where final-year engineering students build their first AI project. No prior experience needed. Attendees leave with a working project and a GitHub link.\n\nRegister: ${l}`,
+  whatsapp: l => `Free AI project workshop for final-years 🚀 Build one in 60 min. Register + invite friends for rewards: ${l}`,
+  telegram: l => `🎓 Final-years: free live workshop, "Build Your First AI Project in 60 Minutes".\nRegister: ${l}\nInvite friends to unlock the Starter Kit and Interview Cheat-Sheet.`
+};
+function caption() { const p = $("plat").value; $("cap").value = CAPS[p](link(p)); }
+
+["fmt", "hook", "theme", "code", "rew", "custom"].forEach(id => $(id).addEventListener("input", draw));
+$("hook").addEventListener("change", () => { $("custom").style.display = $("hook").value === "__c" ? "block" : "none"; draw(); });
+["plat", "code", "base"].forEach(id => $(id).addEventListener("input", caption));
+$("dl").onclick = () => { const a = document.createElement("a"); a.download = "workshop-poster-" + $("fmt").value + ".png"; a.href = c.toDataURL("image/png"); a.click(); };
+$("cp").onclick = () => { $("cap").select(); try { navigator.clipboard.writeText($("cap").value); } catch (e) { document.execCommand("copy"); } toast("Caption copied"); };
+$("cpl").onclick = () => { try { navigator.clipboard.writeText(link($("plat").value)); } catch (e) {} toast("Link copied"); };
+draw(); caption();
+</script>
+</body>
+</html>

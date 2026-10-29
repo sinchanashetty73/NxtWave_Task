@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build Your First AI Project in 60 Minutes — Free Workshop</title>
+<meta name="description" content="Free live workshop for final-year engineering students. Build and ship a working AI project in 60 minutes. Register, get your researcher codename and unlock rewards.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050914;--panel:rgba(12,20,45,.72);--panel2:rgba(20,32,70,.8);--ink:#eaf2ff;--mute:#93a3d1;--cyan:#4de8ff;--lime:#b6ff3c;--vio:#8b7bff;--amber:#ffb62e;--pink:#ff5d8f;--line:rgba(77,232,255,.2);--r:16px;
+--mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--head:"Space Grotesk",Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:
+ radial-gradient(700px 420px at 12% 8%,rgba(139,123,255,.20),transparent 60%),
+ radial-gradient(640px 420px at 92% 22%,rgba(77,232,255,.16),transparent 60%),
+ radial-gradient(700px 500px at 50% 105%,rgba(182,255,60,.10),transparent 60%),
+ linear-gradient(rgba(77,232,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(77,232,255,.045) 1px,transparent 1px);
+ background-size:auto,auto,auto,48px 48px,48px 48px}
+#bg{position:fixed;top:0;left:0;z-index:0;pointer-events:none}
+.sci{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.sci span{position:absolute;font-family:var(--mono);color:var(--cyan);opacity:.13;font-size:34px;animation:drift 22s linear infinite}
+@keyframes drift{from{transform:translateY(105vh) rotate(0)}to{transform:translateY(-15vh) rotate(180deg)}}
+main,nav,footer,.sticky,.refbanner{position:relative;z-index:1}
+a{color:inherit}
+.wrap{max-width:1060px;margin:0 auto;padding:0 18px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
+.logo{font-family:var(--head);font-weight:700;letter-spacing:-.5px;font-size:20px}
+.logo span{color:var(--lime)}
+.btn{display:inline-block;background:var(--lime);color:#06101a;font-family:var(--head);font-weight:700;border:0;border-radius:12px;padding:14px 22px;font-size:16px;cursor:pointer;text-decoration:none;transition:transform .15s,box-shadow .2s;box-shadow:0 0 0 rgba(182,255,60,0)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(182,255,60,.35)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn.ghost:hover{border-color:var(--cyan);box-shadow:0 6px 22px rgba(77,232,255,.2)}
+.btn.sm{padding:9px 14px;font-size:14px;border-radius:10px}
+.kick{font-family:var(--mono);font-size:12px;letter-spacing:1.5px;color:var(--cyan);text-transform:uppercase;margin-bottom:8px}
+.hero{padding:30px 0 14px;text-align:center}
+.pill{display:inline-block;border:1px solid var(--line);background:var(--panel);color:var(--lime);padding:7px 14px;border-radius:99px;font-family:var(--mono);font-size:12px;letter-spacing:.5px}
+h1{font-family:var(--head);font-size:clamp(36px,6.4vw,68px);line-height:1.04;letter-spacing:-1.6px;margin:18px 0 14px}
+h1 em{font-style:normal;background:linear-gradient(90deg,var(--cyan),var(--lime) 60%,var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mute);font-size:18px;max-width:640px;margin:0 auto 18px}
+.hud{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:0 0 20px}
+.hud span{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);background:var(--panel);padding:5px 10px;border-radius:6px;color:var(--ink)}
+.hud b{color:var(--lime);font-weight:700}
+.count{display:flex;gap:10px;justify-content:center;margin:20px 0}
+.count div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px;min-width:76px;backdrop-filter:blur(6px)}
+.count b{display:block;font-family:var(--mono);font-size:30px;font-variant-numeric:tabular-nums;color:var(--cyan)}
+.count small{color:var(--mute);font-size:10.5px;text-transform:uppercase;letter-spacing:1.5px;font-family:var(--mono)}
+.meter{max-width:560px;margin:18px auto 0;text-align:left}
+.meter .row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--mute);margin-bottom:6px}
+.bar{height:14px;background:rgba(5,9,20,.8);border-radius:6px;overflow:hidden;border:1px solid var(--line);position:relative}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--lime));transition:width .8s}
+.bar::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 12px,rgba(5,9,20,.85) 12px 14px)}
+section{padding:42px 0}
+h2{font-family:var(--head);font-size:clamp(26px,4vw,38px);letter-spacing:-1px;margin-bottom:8px}
+.lead{color:var(--mute);margin-bottom:22px}
+.grid{display:grid;gap:14px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.g5{grid-template-columns:repeat(auto-fit,minmax(176px,1fr))}
+.card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;backdrop-filter:blur(6px)}
+.card::before,.card::after{content:"";position:absolute;width:14px;height:14px;border:2px solid var(--cyan);opacity:.7}
+.card::before{top:-1px;left:-1px;border-right:0;border-bottom:0;border-top-left-radius:var(--r)}
+.card::after{bottom:-1px;right:-1px;border-left:0;border-top:0;border-bottom-right-radius:var(--r)}
+.card h3{font-family:var(--head);margin-bottom:6px;font-size:18px}
+.card p{color:var(--mute);font-size:15px}
+.lvl{font-family:var(--mono);font-size:11px;letter-spacing:1.2px;font-weight:700}
+.rank{text-align:left;transition:transform .2s,border-color .2s}
+.rank:hover{transform:translateY(-4px)}
+.rank .ico{font-size:26px;display:block;margin:6px 0}
+.r0{border-color:rgba(147,163,209,.5)}.r0 .lvl{color:#b8c4e8}
+.r1{border-color:rgba(77,232,255,.55)}.r1 .lvl{color:var(--cyan)}
+.r2{border-color:rgba(139,123,255,.6)}.r2 .lvl{color:var(--vio)}
+.r3{border-color:rgba(182,255,60,.6)}.r3 .lvl{color:var(--lime)}
+.r4{border-color:rgba(255,182,46,.7);box-shadow:0 0 30px rgba(255,182,46,.12)}.r4 .lvl{color:var(--amber)}
+.spin{display:grid;grid-template-columns:1fr 1.3fr;gap:18px}
+@media(max-width:760px){.spin{grid-template-columns:1fr}}
+label{display:block;font-family:var(--mono);font-size:11.5px;color:var(--mute);margin:12px 0 6px;font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+select,input[type=text],input[type=email],input[type=tel]{width:100%;background:rgba(5,9,20,.8);border:1px solid var(--line);color:var(--ink);padding:13px;border-radius:10px;font-size:16px;font-family:inherit;transition:border-color .2s,box-shadow .2s}
+select:focus,input:focus{outline:0;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(77,232,255,.18)}
+.idea{background:linear-gradient(135deg,rgba(20,32,70,.85),rgba(12,20,45,.85));border:1px dashed var(--lime);border-radius:var(--r);padding:22px;min-height:230px}
+.idea h3{font-family:var(--head);font-size:24px;margin:6px 0 8px;letter-spacing:-.5px}
+.tag{display:inline-block;background:rgba(5,9,20,.8);border:1px solid var(--line);color:var(--amber);font-family:var(--mono);font-size:11.5px;padding:3px 10px;border-radius:99px;margin:3px 4px 0 0}
+/* timeline */
+.tl .time{font-family:var(--mono);color:var(--lime);font-weight:700;font-size:12px;letter-spacing:1px}
+/* form */
+.form{max-width:640px;margin:0 auto;padding:26px;border-radius:20px}
+.xp{margin-bottom:6px}
+.xp .row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--mute);margin-bottom:6px}
+.xp .row b{color:var(--lime)}
+.cn{display:flex;align-items:center;gap:12px;justify-content:space-between;background:linear-gradient(135deg,rgba(139,123,255,.18),rgba(77,232,255,.1));border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:14px 0 4px}
+.cn small{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:1.5px;color:var(--mute)}
+.cn b{font-family:var(--head);font-size:22px;letter-spacing:.5px;color:var(--lime);text-transform:uppercase}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.two{grid-template-columns:1fr}}
+.err{color:var(--pink);font-size:13px;margin-top:4px;min-height:16px}
+.ok{display:none}
+.ok h3{font-family:var(--head);font-size:26px;margin-bottom:6px}
+.access{font-family:var(--mono);color:var(--lime);font-size:12px;letter-spacing:2px;margin-bottom:6px}
+.me{display:flex;gap:14px;align-items:center;background:rgba(5,9,20,.7);border:1px solid var(--line);border-radius:14px;padding:12px;margin:12px 0}
+.me canvas{width:72px;height:72px;border:0;margin:0;border-radius:0;flex:0 0 auto}
+.me .nm{font-family:var(--head);font-size:24px;font-weight:700;color:var(--lime);text-transform:uppercase;line-height:1.1}
+.me small{font-family:var(--mono);color:var(--mute);font-size:11.5px;display:block}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;border:1px solid var(--cyan);color:var(--cyan);padding:2px 8px;border-radius:99px;margin-top:4px}
+.ref{display:flex;gap:8px;margin:14px 0}
+.ref input{font-family:var(--mono);font-size:13px}
+.shares{display:flex;gap:8px;flex-wrap:wrap}
+.shares a,.shares button{display:inline-flex;align-items:center;gap:7px}
+svg.i{width:18px;height:18px;flex:0 0 auto}
+.tiers{display:grid;gap:8px;margin:16px 0}
+.tier{display:flex;gap:12px;align-items:center;background:rgba(5,9,20,.7);border:1px solid var(--line);padding:10px 12px;border-radius:12px;opacity:.55}
+.tier.on{opacity:1;border-color:var(--lime)}
+.tier .n{background:rgba(20,32,70,.9);width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;flex:0 0 auto}
+.tier.on .n{background:var(--lime);color:#06101a}
+.tier small{color:var(--mute);display:block;font-size:12.5px}
+.next{font-family:var(--mono);font-size:12px;color:var(--amber);margin:6px 0 2px}
+canvas.sc{max-width:100%;border-radius:14px;margin-top:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td,th{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--mute);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:1.2px}
+td.cd{font-family:var(--head);font-weight:700;color:var(--lime);text-transform:uppercase}
+/* social */
+.soc{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.soc a{display:flex;gap:12px;align-items:center;text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;transition:transform .2s,border-color .2s,box-shadow .2s;backdrop-filter:blur(6px)}
+.soc a:hover{transform:translateY(-4px)}
+.soc svg{width:30px;height:30px;flex:0 0 auto}
+.soc b{display:block;font-family:var(--head)}
+.soc small{color:var(--mute);font-size:12.5px}
+.soc .ig:hover{border-color:#ff5d8f;box-shadow:0 8px 26px rgba(255,93,143,.2)}.soc .ig svg{color:#ff5d8f}
+.soc .yt:hover{border-color:#ff4040;box-shadow:0 8px 26px rgba(255,64,64,.2)}.soc .yt svg{color:#ff4040}
+.soc .li:hover{border-color:#4d9bff;box-shadow:0 8px 26px rgba(77,155,255,.2)}.soc .li svg{color:#4d9bff}
+.soc .wa:hover{border-color:#25d366;box-shadow:0 8px 26px rgba(37,211,102,.2)}.soc .wa svg{color:#25d366}
+.soc .tg:hover{border-color:#35b5f0;box-shadow:0 8px 26px rgba(53,181,240,.2)}.soc .tg svg{color:#35b5f0}
+details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:700;font-family:var(--head)}
+details p{color:var(--mute);margin-top:8px}
+footer{padding:26px 0 70px;color:var(--mute);font-size:13px;text-align:center}
+footer .soc2{display:flex;gap:14px;justify-content:center;margin-bottom:12px}
+footer .soc2 a{color:var(--mute);transition:color .2s}
+footer .soc2 a:hover{color:var(--cyan)}
+footer .soc2 svg{width:24px;height:24px}
+.sticky{position:fixed;bottom:0;left:0;right:0;background:rgba(5,9,20,.92);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px;text-align:center;display:none;z-index:9}
+@media(max-width:700px){.sticky{display:block}body{padding-bottom:64px}}
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--lime);color:#06101a;font-weight:700;padding:10px 18px;border-radius:99px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:20}
+.toast.show{opacity:1}
+.refbanner{display:none;background:rgba(20,32,70,.9);border-bottom:1px solid var(--lime);text-align:center;padding:8px;font-size:14px}
+@media(prefers-reduced-motion:reduce){.sci span{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="sci" aria-hidden="true">
+  <span style="left:6%;animation-delay:-3s">⚛</span><span style="left:17%;animation-delay:-11s;font-size:26px">01</span>
+  <span style="left:29%;animation-delay:-7s">∑</span><span style="left:41%;animation-delay:-16s;font-size:28px">{ }</span>
+  <span style="left:53%;animation-delay:-1s">λ</span><span style="left:64%;animation-delay:-13s;font-size:26px">&lt;/&gt;</span>
+  <span style="left:76%;animation-delay:-9s">π</span><span style="left:87%;animation-delay:-5s">Δ</span><span style="left:95%;animation-delay:-18s;font-size:26px">∞</span>
+</div>
+<div class="refbanner" id="refBanner"></div>
+<div class="toast" id="toast"></div>
+
+<main class="wrap">
+  <nav>
+    <div class="logo">Build<span>AI</span>·60</div>
+    <a class="btn sm" href="#register">Join the lab</a>
+  </nav>
+
+  <header class="hero">
+    <span class="pill">FREE · LIVE · FOR FINAL-YEAR ENGINEERING STUDENTS</span>
+    <h1>Build your first <em>AI project</em><br>in 60 minutes.</h1>
+    <p class="sub">No prior AI experience. No paid tools. Register, get your researcher codename, climb the ranks and leave with a working project and a GitHub link.</p>
+    <div class="hud"><span>MISSION: <b>BUILD AN AI PROJECT</b></span><span>TIME: <b>60:00</b></span><span>LEVEL: <b>BEGINNER</b></span><span>ACCESS: <b>FREE</b></span></div>
+    <div class="count">
+      <div><b id="cd">--</b><small>days</small></div>
+      <div><b id="ch">--</b><small>hours</small></div>
+      <div><b id="cm">--</b><small>mins</small></div>
+      <div><b id="cs">--</b><small>secs</small></div>
+    </div>
+    <a class="btn" href="#register">Unlock my seat →</a>
+    <div class="meter">
+      <div class="row"><span id="seatTxt">Researchers joined</span><span id="seatNum">0 / 500</span></div>
+      <div class="bar"><i id="seatBar"></i></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="kick">// 01 · why this lab</div>
+    <h2>Why this, why now</h2>
+    <p class="lead">Every placement round now asks one question: <b>"What have you built?"</b> Not what you studied.</p>
+    <div class="grid g3">
+      <div class="card"><h3>🎯 Project in your hands</h3><p>Not slides. You build a real working AI app live, step by step, and keep the code.</p></div>
+      <div class="card"><h3>📄 Resume-ready</h3><p>Walk out with a project description, GitHub repo and a 30-second interview explanation.</p></div>
+      <div class="card"><h3>🚀 Zero-to-one</h3><p>Built for people who have never trained a model or called an AI API. If you can open a browser, you can follow.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="kick">// 02 · level up</div>
+    <h2>Rank up. Unlock rewards. 🎮</h2>
+    <p class="lead">Everyone starts as a Recruit. Invite friends from your batch to level up and unlock more.</p>
+    <div class="grid g5">
+      <div class="card rank r0"><div class="lvl">LVL 1 · RECRUIT</div><span class="ico">🎥</span><h3>Workshop recording</h3><p>Just register. Even if you can't attend live, you get the full recording.</p></div>
+      <div class="card rank r1"><div class="lvl">LVL 2 · EXPLORER</div><span class="ico">🧰</span><h3>Starter Kit</h3><p>Invite 1 friend. Prompt pack and project templates.</p></div>
+      <div class="card rank r2"><div class="lvl">LVL 3 · NAVIGATOR</div><span class="ico">🎤</span><h3>Interview Cheat-Sheet</h3><p>Invite 3 friends. Explain your AI project in 2 minutes.</p></div>
+      <div class="card rank r3"><div class="lvl">LVL 4 · COMMANDER</div><span class="ico">⚡</span><h3>Priority Q&amp;A</h3><p>Invite 5 friends. Your question gets answered first, live.</p></div>
+      <div class="card rank r4"><div class="lvl">LVL 5 · LEGEND</div><span class="ico">🏆</span><h3>₹100 voucher</h3><p>Be one of the top 5 referrers on the leaderboard.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="kick">// 03 · choose your experiment</div>
+    <h2>Which project would <em style="font-style:normal;color:var(--lime)">you</em> build?</h2>
+    <p class="lead">Pick your branch and a topic you care about. We'll show the exact project you'd ship.</p>
+    <div class="spin">
+      <div class="card">
+        <label for="sBranch">Your branch</label>
+        <select id="sBranch">
+          <option value="cs">CSE / IT / AI&amp;ML</option>
+          <option value="ec">ECE / EEE</option>
+          <option value="me">Mechanical / Civil / Chemical</option>
+          <option value="ot">Other / not sure</option>
+        </select>
+        <label for="sTopic">What do you care about?</label>
+        <select id="sTopic">
+          <option value="career">Getting placed</option>
+          <option value="money">Money &amp; savings</option>
+          <option value="health">Health &amp; fitness</option>
+          <option value="campus">Campus life</option>
+          <option value="farm">Farming &amp; environment</option>
+        </select>
+        <button class="btn" style="margin-top:16px;width:100%" id="spinBtn">🎲 Run the experiment</button>
+      </div>
+      <div class="idea" id="idea"></div>
+    </div>
+  </section>
+
+  <section class="tl">
+    <div class="kick">// 04 · the protocol</div>
+    <h2>The 60 minutes, minute by minute</h2>
+    <p class="lead">Tight, hands-on, no filler.</p>
+    <div class="grid g3">
+      <div class="card"><div class="time">00:00 → 10:00</div><h3>Set up &amp; understand</h3><p>Free tools only. See the finished project first, then learn how it works.</p></div>
+      <div class="card"><div class="time">10:00 → 40:00</div><h3>Build it live</h3><p>Follow along. Use AI to write, fix and improve the code as you go.</p></div>
+      <div class="card"><div class="time">40:00 → 60:00</div><h3>Ship &amp; present</h3><p>Deploy, push to GitHub, and learn how to explain it in interviews.</p></div>
+    </div>
+  </section>
+
+  <section id="register">
+    <div class="kick" style="text-align:center">// 05 · join the lab</div>
+    <h2 style="text-align:center">Create your researcher profile</h2>
+    <p class="lead" style="text-align:center">Takes 20 seconds. Fill your profile to 100% XP and get your codename. Your joining link goes to WhatsApp and email.</p>
+    <div class="card form">
+      <form id="regForm" novalidate>
+        <div class="xp"><div class="row"><span>PROFILE XP</span><span><b id="xpn">0</b> / 100</span></div><div class="bar"><i id="xpBar"></i></div></div>
+        <div class="cn"><div><small>YOUR CODENAME</small><b id="cnTxt">Type your name…</b></div><button class="btn ghost sm" type="button" id="reroll">🎲 Re-roll</button></div>
+        <div class="two">
+          <div><label for="fName">Full name</label><input type="text" id="fName" autocomplete="name"><div class="err" id="eName"></div></div>
+          <div><label for="fPhone">WhatsApp number</label><input type="tel" id="fPhone" inputmode="numeric" placeholder="10-digit number" autocomplete="tel"><div class="err" id="ePhone"></div></div>
+        </div>
+        <label for="fEmail">Email</label><input type="email" id="fEmail" autocomplete="email"><div class="err" id="eEmail"></div>
+        <label for="fCollege">College</label><input type="text" id="fCollege" placeholder="e.g. Sahyadri College of Engineering"><div class="err" id="eCollege"></div>
+        <div class="two">
+          <div><label for="fBranch">Your lab (branch)</label>
+            <select id="fBranch"><option>CSE / IT</option><option>AI &amp; ML / DS</option><option>ECE / EEE</option><option>Mechanical</option><option>Civil</option><option>Other</option></select></div>
+          <div><label for="fYear">Year</label>
+            <select id="fYear"><option>Final year (4th)</option><option>Third year</option><option>Other</option></select></div>
+        </div>
+        <label for="fRef">Friend's referral code (optional)</label><input type="text" id="fRef" placeholder="Got a code from a friend?">
+        <button class="btn" style="width:100%;margin-top:18px" type="submit">Unlock my seat →</button>
+        <p style="color:var(--mute);font-size:12px;margin-top:10px;text-align:center">No spam. Only workshop reminders.</p>
+      </form>
+
+      <div class="ok" id="ok">
+        <div class="access">▶ ACCESS GRANTED</div>
+        <h3>Welcome to the lab, <span id="okName"></span>!</h3>
+        <div class="me">
+          <canvas id="avatar" width="144" height="144"></canvas>
+          <div><small>RESEARCHER CODENAME</small><div class="nm" id="okCode"></div><span class="badge" id="okRank"></span> <small style="display:inline;margin-left:6px" id="okId"></small></div>
+        </div>
+        <p style="color:var(--mute)">Share your link. 🎁 Bring 20 friends to register with your link and unlock exciting coupons and special prizes!!</p>
+        <div class="ref"><input type="text" id="myLink" readonly><button class="btn sm" id="copyBtn" type="button">Copy</button></div>
+        <div class="shares" id="shares"></div>
+        <p style="margin-top:16px"><b id="refCount">0</b> friends joined with your link</p>
+        <div class="next" id="nextRank"></div>
+        <div class="tiers" id="tiers"></div>
+        <b>Your shareable researcher card</b>
+        <canvas class="sc" id="card" width="1080" height="1350" style="width:100%;max-width:380px"></canvas>
+        <div class="shares" style="margin-top:10px"><button class="btn sm" id="dlBtn" type="button">⬇ Download card</button><span style="color:var(--mute);font-size:13px;align-self:center">Post it on your Instagram story or WhatsApp Status.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="kick">// 06 · leaderboard</div>
+    <h2>Top researchers this week</h2>
+    <p class="lead">Top 5 get a ₹100 voucher. Updated live.</p>
+    <div class="card"><table id="board"><thead><tr><th>#</th><th>Codename</th><th>College</th><th>Invites</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <div class="kick">// 07 · join the community</div>
+    <h2>Follow the lab</h2>
+    <p class="lead">Reminders, sneak peeks of the project and reward drops show up here first.</p>
+    <div class="soc" id="socials"></div>
+  </section>
+
+  <section>
+    <div class="kick">// 08 · faq</div>
+    <h2>Quick answers</h2>
+    <details><summary>Is it really free?</summary><p>Yes. No fees, no card details. We use free tools only.</p></details>
+    <details><summary>I'm not from CSE. Can I join?</summary><p>Yes. The project is built to be followed by anyone, any branch. Use the experiment picker above to see your version.</p></details>
+    <details><summary>What if I can't attend live?</summary><p>Register anyway. Registered students get the recording.</p></details>
+    <details><summary>Do I need to know coding?</summary><p>Basic familiarity helps, but AI writes most of the code. We'll teach you to direct it.</p></details>
+    <details><summary>How do codenames and ranks work?</summary><p>You get a codename when you register (re-roll it until you like it). Your rank goes up as friends register with your link: Explorer at 1, Navigator at 3, Commander at 5, Legend if you finish in the top 5.</p></details>
+  </section>
+</main>
+
+<footer>
+  <div class="soc2" id="socFoot"></div>
+  Free workshop for final-year engineering students · Your details are used only for workshop updates.
+</footer>
+<div class="sticky"><a class="btn" href="#register" style="width:92%">Unlock my seat →</a></div>
+
+<script>
+/* ===== CONFIG: edit these to go live ===== */
+const CONFIG = {
+  WORKSHOP_DATE: "2026-11-07T18:00:00+05:30",
+  GOAL: 500,
+  WEBHOOK_URL: "",
+  STORE_KEY: "nw_regs_v1",
+  SOCIAL: {  // replace each with your real page / group link
+    instagram: "https://www.instagram.com/",
+    youtube: "https://www.youtube.com/",
+    linkedin: "https://www.linkedin.com/",
+    whatsapp: "https://www.whatsapp.com/",
+    telegram: "https://t.me/"
+  }
+};
+/* ========================================= */
+
+const $ = id => document.getElementById(id);
+const load = () => { try { return JSON.parse(localStorage.getItem(CONFIG.STORE_KEY) || "[]"); } catch (e) { return []; } };
+const save = a => { try { localStorage.setItem(CONFIG.STORE_KEY, JSON.stringify(a)); } catch (e) {} };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const params = new URLSearchParams(location.search);
+const incomingRef = (params.get("ref") || "").toUpperCase().trim();
+const source = (params.get("utm_source") || (incomingRef ? "referral" : "direct")).toLowerCase();
+function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add("show"); setTimeout(() => el.classList.remove("show"), 2200); }
+
+/* ---------- icons ---------- */
+const S = 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+const ICON = {
+  instagram: `<svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" ${S}/><circle cx="12" cy="12" r="4" ${S}/><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/></svg>`,
+  youtube: `<svg class="i" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="4.5" ${S}/><path d="M10 9l5 3-5 3z" fill="currentColor"/></svg>`,
+  linkedin: `<svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3.5" ${S}/><rect x="7" y="10" width="2" height="7" fill="currentColor"/><circle cx="8" cy="7.3" r="1.2" fill="currentColor"/><path d="M12 10h2v1c.5-.8 1.4-1.2 2.4-1.2 1.8 0 2.6 1.1 2.6 3V17h-2v-3.7c0-.9-.4-1.5-1.3-1.5-.9 0-1.7.6-1.7 1.6V17h-2z" fill="currentColor"/></svg>`,
+  whatsapp: `<svg class="i" viewBox="0 0 24 24"><path d="M3.2 20.8l1.4-4.7A8.6 8.6 0 1 1 8 19.6z" ${S}/><path d="M9.2 8.6c.3 2.6 2.3 4.9 5.1 5.7l1.2-1.2-1.8-1-.8.7c-.9-.4-1.7-1.3-2.1-2.2l.7-.8-1-1.8z" fill="currentColor"/></svg>`,
+  telegram: `<svg class="i" viewBox="0 0 24 24"><path d="M21.5 3.5L2.8 10.7l5.4 2 2.1 6.4 3.1-3.9 4.6 3.4z" ${S}/><path d="M8.2 12.7l9.6-6" ${S}/></svg>`,
+  x: `<svg class="i" viewBox="0 0 24 24"><path d="M4 4l16 16M20 4L4 20" ${S}/></svg>`
+};
+const SOC = [
+  ["instagram", "ig", "Instagram", "Reels & sneak peeks"],
+  ["youtube", "yt", "YouTube", "Shorts & demos"],
+  ["linkedin", "li", "LinkedIn", "Updates & wins"],
+  ["whatsapp", "wa", "WhatsApp", "Workshop reminders"],
+  ["telegram", "tg", "Telegram", "Project help"]
+];
+$("socials").innerHTML = SOC.map(([k, c, n, d]) =>
+  `<a class="${c}" href="${esc(CONFIG.SOCIAL[k])}" target="_blank" rel="noopener">${ICON[k].replace('class="i"', 'class="i" style="width:30px;height:30px"')}<div><b>${n}</b><small>${d}</small></div></a>`).join("");
+$("socFoot").innerHTML = SOC.map(([k, c, n]) => `<a href="${esc(CONFIG.SOCIAL[k])}" target="_blank" rel="noopener" aria-label="${n}">${ICON[k]}</a>`).join("");
+
+/* ---------- animated neural-network background ---------- */
+(function () {
+  const cv = $("bg"), cx = cv.getContext("2d");
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W, H, dpr, nodes = [], mx = -9999, my = -9999;
+  function init() {
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = cv.width = innerWidth * dpr; H = cv.height = innerHeight * dpr;
+    cv.style.width = innerWidth + "px"; cv.style.height = innerHeight + "px";
+    const n = Math.min(90, Math.floor(innerWidth * innerHeight / 15000));
+    nodes = Array.from({ length: n }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .3 * dpr, vy: (Math.random() - .5) * .3 * dpr, r: (Math.random() * 1.5 + .8) * dpr, c: Math.random() < .2 ? "182,255,60" : "77,232,255" }));
+  }
+  function draw() {
+    cx.clearRect(0, 0, W, H);
+    const D = 150 * dpr;
+    for (const a of nodes) {
+      if (!reduce) { a.x += a.vx; a.y += a.vy; if (a.x < 0 || a.x > W) a.vx *= -1; if (a.y < 0 || a.y > H) a.vy *= -1; }
+      cx.fillStyle = `rgba(${a.c},.75)`; cx.beginPath(); cx.arc(a.x, a.y, a.r, 0, 6.3); cx.fill();
+    }
+    for (let i = 0; i < nodes.length; i++) {
+      const a = nodes[i];
+      for (let j = i + 1; j < nodes.length; j++) {
+        const b = nodes[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (d < D) { cx.strokeStyle = `rgba(77,232,255,${(1 - d / D) * .28})`; cx.lineWidth = dpr * .8; cx.beginPath(); cx.moveTo(a.x, a.y); cx.lineTo(b.x, b.y); cx.stroke(); }
+      }
+      const dm = Math.hypot(a.x - mx, a.y - my);
+      if (dm < D * 1.3) { cx.strokeStyle = `rgba(182,255,60,${(1 - dm / (D * 1.3)) * .5})`; cx.lineWidth = dpr; cx.beginPath(); cx.moveTo(a.x, a.y); cx.lineTo(mx, my); cx.stroke(); }
+    }
+    if (!reduce) requestAnimationFrame(draw);
+  }
+  addEventListener("resize", () => { init(); if (reduce) draw(); });
+  addEventListener("pointermove", e => { mx = e.clientX * dpr; my = e.clientY * dpr; });
+  init(); draw();
+})();
+
+/* ---------- countdown ---------- */
+function tick() {
+  const v = Math.max(0, new Date(CONFIG.WORKSHOP_DATE) - new Date());
+  $("cd").textContent = Math.floor(v / 864e5);
+  $("ch").textContent = String(Math.floor(v / 36e5) % 24).padStart(2, "0");
+  $("cm").textContent = String(Math.floor(v / 6e4) % 60).padStart(2, "0");
+  $("cs").textContent = String(Math.floor(v / 1e3) % 60).padStart(2, "0");
+}
+setInterval(tick, 1000); tick();
+
+/* ---------- codenames & ranks ---------- */
+const POOLS = {
+  cs: { a: ["Neural", "Quantum", "Binary", "Tensor", "Gradient", "Vector", "Pixel", "Cipher"], n: ["Architect", "Coder", "Alchemist", "Ninja", "Wizard", "Pilot"] },
+  ec: { a: ["Circuit", "Photon", "Signal", "Voltage", "Quantum", "Resonant"], n: ["Sage", "Wizard", "Pilot", "Spark", "Engineer", "Tuner"] },
+  me: { a: ["Kinetic", "Torque", "Turbo", "Plasma", "Hydro", "Titan"], n: ["Forger", "Engineer", "Pilot", "Builder", "Striker", "Innovator"] },
+  ot: { a: ["Cosmic", "Atomic", "Stellar", "Nova", "Lunar", "Solar"], n: ["Explorer", "Pioneer", "Voyager", "Inventor", "Trailblazer", "Seeker"] }
+};
+const hash = s => { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
+const branchKey = v => /ECE|EEE/i.test(v) ? "ec" : /Mech|Civil/i.test(v) ? "me" : /CSE|IT|AI|DS/i.test(v) ? "cs" : "ot";
+function makeCodename(name, branch, seed) {
+  const p = POOLS[branchKey(branch)], h = hash(name.toLowerCase() + "|" + seed);
+  return p.a[h % p.a.length] + " " + p.n[(h >>> 8) % p.n.length];
+}
+const RANKS = [[0, "Recruit", "🔰"], [1, "Explorer", "🧭"], [3, "Navigator", "🛰️"], [5, "Commander", "⚡"], [10, "Legend", "🏆"]];
+function rankFor(n) { let r = 0; RANKS.forEach((x, i) => { if (n >= x[0]) r = i; }); return { i: r, name: RANKS[r][1], icon: RANKS[r][2], next: RANKS[r + 1] || null }; }
+function scramble(el, final) {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ01<>/#"; let f = 0; const total = 14; clearInterval(el._t);
+  el._t = setInterval(() => {
+    f++; el.textContent = final.split("").map((ch, i) => ch === " " ? " " : (i < f * final.length / total ? ch : chars[Math.floor(Math.random() * chars.length)])).join("");
+    if (f >= total) { clearInterval(el._t); el.textContent = final; }
+  }, 35);
+}
+
+/* ---------- seat meter + leaderboard ---------- */
+const refCountOf = (code, regs) => regs.filter(r => r.ref === code).length;
+const codeOf = r => r.codename || makeCodename(r.name, r.branch || "", 0);
+function renderMeter() {
+  const n = load().length;
+  $("seatNum").textContent = n + " / " + CONFIG.GOAL;
+  $("seatBar").style.width = Math.min(100, n / CONFIG.GOAL * 100) + "%";
+  $("seatTxt").textContent = n === 0 ? "Be the first researcher to join" : "Researchers joined";
+}
+function renderBoard() {
+  const regs = load();
+  const rows = regs.map(r => ({ cn: codeOf(r), college: r.college, n: refCountOf(r.code, regs) })).filter(r => r.n > 0).sort((a, b) => b.n - a.n).slice(0, 10);
+  const medal = ["🥇", "🥈", "🥉"];
+  $("board").querySelector("tbody").innerHTML = rows.length ? rows.map((r, i) =>
+    `<tr><td>${medal[i] || i + 1}</td><td class="cd">${esc(r.cn)}</td><td>${esc(r.college)}</td><td>${r.n}</td></tr>`).join("")
+    : `<tr><td colspan="4" style="color:var(--mute)">No researchers on the board yet. Register and share your link to claim #1.</td></tr>`;
+}
+
+/* ---------- project picker ---------- */
+const IDEAS = {
+  career: { t: "Resume-to-Role Matcher", d: "Paste your resume and a job description. AI scores the match, finds missing skills and rewrites weak bullets.", tools: ["LLM API", "Streamlit", "Prompting"],
+    twist: { cs: "Add an auto-generated 30-day skill roadmap.", ec: "Tuned for core + embedded job descriptions.", me: "Tuned for core mechanical and civil roles, plus Python upskilling.", ot: "Works for any branch. Pick your target role." } },
+  money: { t: "Student Expense Coach", d: "Upload a month of UPI messages. AI categorises spending, spots leaks and suggests a realistic budget.", tools: ["Pandas", "LLM API", "Charts"],
+    twist: { cs: "Add a simple forecast of next month's spend.", ec: "Read SMS-style logs like sensor data and detect anomalies.", me: "Add a savings-goal tracker for your first laptop or bike.", ot: "No code needed beyond copy-paste." } },
+  health: { t: "Smart Meal and Workout Planner", d: "Tell it your goal, budget and hostel mess menu. It builds a weekly plan you can follow.", tools: ["LLM API", "Forms", "Prompt chaining"],
+    twist: { cs: "Add a chatbot that adjusts the plan daily.", ec: "Plug in wearable-style data to adapt the plan.", me: "Add calorie estimates for common canteen food.", ot: "Works with any diet preference." } },
+  campus: { t: "Campus Doubt Buddy", d: "Upload your syllabus and notes. Ask doubts and get answers grounded only in your own material.", tools: ["RAG basics", "Embeddings", "Chat UI"],
+    twist: { cs: "Add quiz generation per unit.", ec: "Feed it datasheets and lab manuals.", me: "Feed it design codes and formula sheets.", ot: "Use it for any subject." } },
+  farm: { t: "Crop Photo Doctor", d: "Upload a leaf photo and AI explains the likely issue and what to do next, in simple language.", tools: ["Vision model", "Python", "Simple UI"],
+    twist: { cs: "Add Telugu, Hindi or Kannada output.", ec: "Connect it to a soil-sensor reading.", me: "Add irrigation-pump scheduling advice.", ot: "Useful for any rural or green project." } }
+};
+function showIdea() {
+  const b = $("sBranch").value, t = $("sTopic").value, i = IDEAS[t];
+  $("idea").innerHTML = `<span class="tag">EXPERIMENT · 60 MIN</span><h3>${esc(i.t)}</h3><p style="color:var(--mute)">${esc(i.d)}</p><p style="margin-top:10px"><b style="color:var(--lime)">Your twist:</b> ${esc(i.twist[b])}</p><div style="margin-top:10px">${i.tools.map(x => `<span class="tag">${esc(x)}</span>`).join("")}</div><a class="btn sm" style="margin-top:14px" href="#register">Join to build this →</a>`;
+}
+$("spinBtn").onclick = showIdea; $("sBranch").onchange = showIdea; $("sTopic").onchange = showIdea; showIdea();
+
+/* ---------- referral banner ---------- */
+if (incomingRef) {
+  const ref = load().find(r => r.code === incomingRef);
+  $("fRef").value = incomingRef;
+  $("refBanner").style.display = "block";
+  $("refBanner").innerHTML = ref ? `👋 Researcher <b>${esc(codeOf(ref))}</b> invited you. Join the lab below.` : `👋 A friend invited you. Join the lab below.`;
+}
+
+/* ---------- form: XP bar + live codename ---------- */
+let seed = 0, curCode = "";
+const v = id => $(id).value.trim();
+const phone10 = () => $("fPhone").value.replace(/\D/g, "").slice(-10);
+const okName = () => v("fName").length >= 2, okPhone = () => /^[6-9]\d{9}$/.test(phone10()), okEmail = () => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v("fEmail")), okCol = () => v("fCollege").length >= 3;
+function updateXP() {
+  const xp = [okName(), okPhone(), okEmail(), okCol()].filter(Boolean).length * 25;
+  $("xpn").textContent = xp; $("xpBar").style.width = xp + "%";
+}
+function updateCodename(animate) {
+  if (!okName()) { curCode = ""; $("cnTxt").textContent = "Type your name…"; return; }
+  const next = makeCodename(v("fName"), $("fBranch").value, seed);
+  if (next !== curCode) { curCode = next; animate ? scramble($("cnTxt"), next) : ($("cnTxt").textContent = next); }
+}
+["fName", "fPhone", "fEmail", "fCollege"].forEach(id => $(id).addEventListener("input", () => { updateXP(); if (id === "fName") updateCodename(false); }));
+$("fBranch").addEventListener("change", () => updateCodename(true));
+$("reroll").onclick = () => { if (!okName()) { toast("Type your name first"); $("fName").focus(); return; } seed++; updateCodename(true); };
+updateXP();
+
+function validate() {
+  let ok = true; const set = (id, m) => { $(id).textContent = m; if (m) ok = false; };
+  set("eName", okName() ? "" : "Enter your name");
+  set("ePhone", okPhone() ? "" : "Enter a valid 10-digit number");
+  set("eEmail", okEmail() ? "" : "Enter a valid email");
+  set("eCollege", okCol() ? "" : "Enter your college");
+  return ok;
+}
+function makeCode(name) {
+  const base = name.replace(/[^a-z]/gi, "").toUpperCase().slice(0, 3).padEnd(3, "X"), chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; let s = "";
+  for (let i = 0; i < 4; i++) s += chars[Math.floor(Math.random() * chars.length)];
+  return base + s;
+}
+let me = null;
+$("regForm").addEventListener("submit", e => {
+  e.preventDefault();
+  if (!validate()) return;
+  const regs = load(), email = v("fEmail").toLowerCase(), phone = phone10();
+  const existing = regs.find(r => r.email === email || r.phone === phone);
+  if (existing) { me = existing; toast("You're already in the lab. Here's your link."); }
+  else {
+    me = { name: v("fName"), phone, email, college: v("fCollege"), branch: $("fBranch").value, year: $("fYear").value,
+      codename: curCode || makeCodename(v("fName"), $("fBranch").value, seed), code: makeCode(v("fName")), ref: v("fRef").toUpperCase(), source, ts: new Date().toISOString() };
+    regs.push(me); save(regs);
+    if (CONFIG.WEBHOOK_URL) { try { fetch(CONFIG.WEBHOOK_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(me) }); } catch (x) {} }
+  }
+  showSuccess();
+});
+
+/* ---------- success panel ---------- */
+const myLink = () => location.origin + location.pathname + "?ref=" + me.code + "&utm_source=referral";
+function shareMsg() { return `I just joined a free live workshop: "Build Your First AI Project in 60 Minutes" 🚀 My codename is ${codeOf(me)}. Final-year? Join me (free): ${myLink()}`; }
+function drawAvatar(cv, name, size) {
+  const x = cv.getContext("2d"), s = size || cv.width, h = hash(name) % 360, cxp = s / 2, r = s * .46;
+  x.clearRect(0, 0, s, s);
+  const g = x.createLinearGradient(0, 0, s, s); g.addColorStop(0, `hsl(${h},90%,58%)`); g.addColorStop(1, `hsl(${(h + 60) % 360},90%,40%)`);
+  x.beginPath(); for (let i = 0; i < 6; i++) { const a = Math.PI / 3 * i - Math.PI / 6; x.lineTo(cxp + r * Math.cos(a), cxp + r * Math.sin(a)); } x.closePath();
+  x.fillStyle = g; x.fill(); x.lineWidth = s * .03; x.strokeStyle = "#b6ff3c"; x.stroke();
+  const ini = name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+  x.fillStyle = "#06101a"; x.font = `700 ${s * .34}px "Space Grotesk",system-ui,sans-serif`; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(ini, cxp, cxp + s * .02); x.textAlign = "left"; x.textBaseline = "alphabetic";
+}
+function renderTiers() {
+  const regs = load(), n = refCountOf(me.code, regs), rk = rankFor(n);
+  $("refCount").textContent = n;
+  $("okRank").textContent = rk.icon + " " + rk.name.toUpperCase();
+  $("nextRank").textContent = rk.next ? `▲ ${rk.next[0] - n} more invite${rk.next[0] - n > 1 ? "s" : ""} to reach ${rk.next[1]}` : "★ Max rank reached. Hold your place in the top 5!";
+  const T = [[0, "Recruit: Workshop recording", "Unlocked when you register"], [1, "Explorer: AI Project Starter Kit", "Prompt pack + project templates"], [3, "Navigator: Interview Cheat-Sheet", "Explain your AI project in 2 minutes"], [5, "Commander: Priority Q&A", "Ask your question first, live"], [10, "Legend: ₹100 voucher", "Finish in the top 5 referrers"]];
+  $("tiers").innerHTML = T.map(t => `<div class="tier ${n >= t[0] ? "on" : ""}"><div class="n">${t[0] === 0 ? "✓" : t[0]}</div><div><b>${t[1]}</b><small>${t[2]}</small></div></div>`).join("");
+}
+function showSuccess() {
+  $("regForm").style.display = "none"; $("ok").style.display = "block";
+  $("okName").textContent = me.name.split(" ")[0];
+  const cn = codeOf(me); scramble($("okCode"), cn);
+  $("okId").textContent = "ID #" + me.code;
+  drawAvatar($("avatar"), cn);
+  $("myLink").value = myLink();
+  const m = encodeURIComponent(shareMsg()), u = encodeURIComponent(myLink());
+  $("shares").innerHTML =
+    `<a class="btn sm" style="background:#25d366;color:#052e14" target="_blank" rel="noopener" href="https://wa.me/?text=${m}">${ICON.whatsapp} WhatsApp</a>` +
+    `<a class="btn ghost sm" target="_blank" rel="noopener" href="https://t.me/share/url?url=${u}&text=${encodeURIComponent("Free live AI project workshop for final-years 🚀")}">${ICON.telegram} Telegram</a>` +
+    `<a class="btn ghost sm" target="_blank" rel="noopener" href="https://www.linkedin.com/sharing/share-offsite/?url=${u}">${ICON.linkedin} LinkedIn</a>` +
+    `<a class="btn ghost sm" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${m}">${ICON.x} X</a>`;
+  renderTiers(); drawCard(); renderMeter(); renderBoard();
+  $("ok").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+$("copyBtn").onclick = () => { $("myLink").select(); try { navigator.clipboard.writeText($("myLink").value); } catch (e) { document.execCommand("copy"); } toast("Link copied"); };
+
+/* ---------- shareable researcher card ---------- */
+function drawCard() {
+  const c = $("card"), x = c.getContext("2d"), W = 1080, H = 1350, cn = codeOf(me), rk = rankFor(refCountOf(me.code, load()));
+  const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, "#050914"); g.addColorStop(1, "#16206b"); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.strokeStyle = "rgba(77,232,255,.07)"; x.lineWidth = 2; for (let i = 0; i <= W; i += 60) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, H); x.stroke(); } for (let j = 0; j <= H; j += 60) { x.beginPath(); x.moveTo(0, j); x.lineTo(W, j); x.stroke(); }
+  x.fillStyle = "rgba(182,255,60,.12)"; x.beginPath(); x.arc(930, 170, 280, 0, 7); x.fill();
+  x.fillStyle = "rgba(139,123,255,.16)"; x.beginPath(); x.arc(90, 1180, 320, 0, 7); x.fill();
+  x.fillStyle = "#4de8ff"; x.font = "700 30px ui-monospace,Menlo,Consolas,monospace"; x.fillText("// FREE LIVE WORKSHOP · FINAL-YEAR ENGINEERS", 70, 110);
+  const av = document.createElement("canvas"); av.width = av.height = 300; drawAvatar(av, cn, 300); x.drawImage(av, 70, 190);
+  x.fillStyle = "#93a3d1"; x.font = "700 26px ui-monospace,Menlo,Consolas,monospace"; x.fillText("RESEARCHER CODENAME", 400, 270);
+  x.fillStyle = "#b6ff3c"; x.font = "700 78px system-ui,'Space Grotesk',sans-serif";
+  const words = cn.toUpperCase().split(" "); words.forEach((w, i) => x.fillText(w, 400, 355 + i * 84));
+  x.fillStyle = "rgba(77,232,255,.15)"; const bw = 330, by = 355 + words.length * 84 - 20; x.beginPath(); x.roundRect ? x.roundRect(400, by, bw, 52, 26) : x.rect(400, by, bw, 52); x.fill();
+  x.fillStyle = "#4de8ff"; x.font = "700 28px ui-monospace,Menlo,Consolas,monospace"; x.fillText(rk.name.toUpperCase() + " · ID " + me.code, 420, by + 36);
+  x.fillStyle = "#fff"; x.font = "800 92px system-ui,'Space Grotesk',sans-serif";
+  ["I'm building my", "first AI project", "in 60 minutes."].forEach((l, i) => x.fillText(l, 70, 700 + i * 106));
+  x.fillStyle = "#ffb62e"; x.font = "700 44px system-ui,sans-serif"; x.fillText(me.name, 70, 1060);
+  x.fillStyle = "#93a3d1"; x.font = "500 32px system-ui,sans-serif"; let col = me.college; if (col.length > 44) col = col.slice(0, 42) + "…"; x.fillText(col, 70, 1108);
+  x.fillStyle = "#b6ff3c"; x.fillRect(70, 1170, 940, 120); x.fillStyle = "#06101a"; x.font = "800 46px system-ui,sans-serif"; x.fillText("Join me · use code " + me.code, 105, 1244);
+}
+$("dlBtn").onclick = () => { const a = document.createElement("a"); a.download = "my-researcher-card.png"; a.href = $("card").toDataURL("image/png"); a.click(); };
+
+renderMeter(); renderBoard();
+setInterval(() => { renderMeter(); renderBoard(); if (me) renderTiers(); }, 4000);
+</script>
+</body>
+</html>
